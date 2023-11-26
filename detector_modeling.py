@@ -7,7 +7,10 @@ from scipy.optimize import curve_fit
 from sklearn import mixture
 import logging
 import re
+
 logging.basicConfig(filename='result.log', level=logging.DEBUG)
+
+
 def modeling_init(datapath):
     # Determine picture size
     size_m = input('Please enter the picture size m:')
@@ -71,8 +74,10 @@ def get_optimal_number(X):
     plt.title('BIC for Gaussian Mixture Model')
     plt.savefig('bic_plot.png', format='png')
 
+
 def log_model(x, a, b, c):
     return a * np.log(b * x) + c
+
 
 def gauss_clustering(DR_time_series_cube, time_series_cube, clusters_number, img_num, size_m, size_n, index, n,
                      DR_time_series_cube_latest=None, true_mask=None):
@@ -126,7 +131,7 @@ def gauss_clustering(DR_time_series_cube, time_series_cube, clusters_number, img
         for j in range(rows_len):
             clusters_cube[j] = time_series_cube[rows[j], cols[j], :]
         # Define time series coordinates
-        time_series = np.arange(1, img_num )
+        time_series = np.arange(1, img_num)
         # Calculate the reciprocal of the temperature
         inverse_temperature = 1 / time_series
         # print(len(inverse_temperature))
@@ -134,7 +139,7 @@ def gauss_clustering(DR_time_series_cube, time_series_cube, clusters_number, img
         y = clusters_cube.mean(axis=0)
         # Logarithmic transformation
         log_dark_current = np.log(y)
-        params, covariance = curve_fit(log_model,  inverse_temperature,   log_dark_current, p0=[1, 1, 1])
+        params, covariance = curve_fit(log_model, inverse_temperature, log_dark_current, p0=[1, 1, 1])
         # Preservation factor
         f1_arr.append(params)
         # Fits the y value
@@ -167,4 +172,3 @@ def gauss_clustering(DR_time_series_cube, time_series_cube, clusters_number, img
         gauss_clustering(DR_time_series_cube, time_series_cube, clusters_number, img_num, size_m, size_n, index, n,
                          DR_time_series_cube_latest, mask)
     return mask, DR_time_series_cube, DR_time_series_cube_latest
-
