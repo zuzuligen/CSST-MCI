@@ -93,7 +93,6 @@ class SExtactor(object):
                 param_dict['value'] = True if len(info[0]) > 1 else False
                 # print(param_dict)
                 param_list.append(param_dict)
-
         # pprint(conf_list)
         return pd.DataFrame(param_list, columns=['line', 'param', 'value'])
 
@@ -106,7 +105,7 @@ class SExtactor(object):
         return df[df.value == True]
 
     def cat_keyworld(self, keyworld, flag):
-        '''[查看指定参数的信息]
+        """[查看指定参数的信息]
 
         [description]
 
@@ -116,7 +115,7 @@ class SExtactor(object):
 
         Returns:
             [list] -- [指定参数的信息['line', 'param', 'value']]
-        '''
+        """
         if flag == 'sex':
             df = self.read_configue
             return df[df.param == keyworld].values.tolist()
@@ -127,14 +126,14 @@ class SExtactor(object):
             print('flag input error！！')
 
     def set_configue(self, keys, values):
-        '''[设置参数]
+        """[设置参数]
 
         [description]
 
         Arguments:
             keys {[list]} -- [需修改的参数关键字列表]
             values {[list]} -- [对应的修改的参数取值]
-        '''
+        """
         with open(self.configFile, 'r') as f:
             context = f.readlines()
         for key, value in zip(keys, values):
@@ -152,14 +151,14 @@ class SExtactor(object):
             f.write(''.join(context))
 
     def set_param(self, key, state):
-        '''[设置参数]
+        """[设置参数]
 
         [description]
 
         Arguments:
             key {[str]} -- [需修改的参数关键字]
             state {[bool]} -- [参数状态]
-        '''
+        """
         with open(self.paramFile, 'r') as f:
             context = f.readlines()
         # if key in context.split():
@@ -181,12 +180,12 @@ class SExtactor(object):
                 f.write(key)
 
     def call_sex(self):
-        '''调用SExtractor'''
+        """调用SExtractor"""
         # os.system('echo %s | sudo -S %s' % (self.password, 'sextractor -c ' + self.configFile + self.fitPath))
         os.system('echo %s | sudo -S sextractor -c %s %s' % (self.password, self.configFile, self.fitPath))
 
     def read_catalog(self):
-        '''提取image.sex文件的坐标和列信息'''
+        """提取image.sex文件的坐标和列信息"""
         self.call_sex()
         # sextr(self.fitPath, self.configFile, 741236985)
         coords = []
@@ -207,7 +206,7 @@ class SExtactor(object):
         return coords, raw_info
 
     def judge_param(self, param_list):
-        '''判断SExtractor配置文件采参数是否齐全'''
+        """判断SExtractor配置文件采参数是否齐全"""
         judge_condition = [x for x in param_list if x not in self.row_info]
         if judge_condition == []:
             pass
@@ -221,7 +220,7 @@ class SExtactor(object):
         return image
 
     def creat_stamp(self, image, X, Y, RADIUS):
-        '''给定中心半径截stamp'''
+        """给定中心半径截stamp"""
         return image[(round(Y) - math.ceil(RADIUS)):(round(Y) + math.ceil(RADIUS) + 1),
                (round(X) - math.ceil(RADIUS)):(round(X) + math.ceil(RADIUS) + 1)]
 
@@ -236,11 +235,11 @@ class ColdHotdetector(SExtactor):
 
     @property
     def cold(self):
-        '''
+        """
         [大阈值检测]
         Returns:
             [list] -- [description]
-        '''
+        """
         self.set_configue(self.cold_keys, self.cold_values)
         catalog = self.read_catalog()[0]
         return catalog
@@ -267,7 +266,7 @@ class ColdHotdetector(SExtactor):
         self.draw_bbox(jpg, cold, save, R, R, 'red', 2)
 
     def draw_bbox(self, jpg, starList, save, x, y, color, lineWidth):
-        '''根据坐标绘制bbox，由于fits图像与jpg图像原点不同，需要两次翻转'''
+        """根据坐标绘制bbox，由于fits图像与jpg图像原点不同，需要两次翻转"""
         Image.MAX_IMAGE_PIXELS = 1000000000
         with Image.open(jpg) as image:
             out = image.transpose(Image.FLIP_TOP_BOTTOM)
